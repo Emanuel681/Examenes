@@ -1,0 +1,1314 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Exámenes — Fisiología del Sistema Cardiovascular</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Source+Serif+4:ital,wght@0,300;0,400;0,600;1,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --crimson: #8B1A1A;
+    --crimson-light: #C0392B;
+    --gold: #C9A84C;
+    --cream: #FAF7F2;
+    --ink: #1A1410;
+    --ink-mid: #3D2B1F;
+    --border: #D4C5A9;
+    --correct: #1B5E20;
+    --wrong: #7F0000;
+    --correct-bg: #E8F5E9;
+    --wrong-bg: #FFEBEE;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--cream);
+    color: var(--ink);
+    font-family: 'Source Serif 4', Georgia, serif;
+    min-height: 100vh;
+  }
+
+  /* ── HERO ── */
+  .hero {
+    background: var(--crimson);
+    color: var(--cream);
+    padding: 56px 40px 44px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: repeating-linear-gradient(
+      -45deg,
+      transparent, transparent 30px,
+      rgba(255,255,255,.03) 30px, rgba(255,255,255,.03) 31px
+    );
+  }
+  .hero-label {
+    font-family: 'Source Serif 4', serif;
+    font-size: 11px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 14px;
+  }
+  .hero h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(28px, 5vw, 52px);
+    font-weight: 900;
+    line-height: 1.1;
+    position: relative;
+  }
+  .hero-sub {
+    margin-top: 10px;
+    font-size: 15px;
+    opacity: .75;
+    font-style: italic;
+    position: relative;
+  }
+
+  /* ── TABS ── */
+  .tabs {
+    display: flex;
+    justify-content: center;
+    gap: 0;
+    background: var(--ink);
+    border-bottom: 3px solid var(--gold);
+  }
+  .tab-btn {
+    background: none;
+    border: none;
+    color: rgba(250,247,242,.5);
+    font-family: 'Source Serif 4', serif;
+    font-size: 13px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 16px 32px;
+    cursor: pointer;
+    transition: all .2s;
+    border-bottom: 3px solid transparent;
+    margin-bottom: -3px;
+  }
+  .tab-btn:hover { color: var(--cream); }
+  .tab-btn.active {
+    color: var(--gold);
+    border-bottom-color: var(--gold);
+    background: rgba(201,168,76,.08);
+  }
+
+  /* ── EXAM PANEL ── */
+  .exam-panel { display: none; max-width: 860px; margin: 0 auto; padding: 40px 24px 80px; }
+  .exam-panel.active { display: block; }
+
+  .exam-header {
+    border-left: 4px solid var(--gold);
+    padding-left: 20px;
+    margin-bottom: 36px;
+  }
+  .exam-header h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 26px;
+    color: var(--crimson);
+  }
+  .exam-header p {
+    font-size: 14px;
+    color: var(--ink-mid);
+    margin-top: 4px;
+    font-style: italic;
+  }
+
+  /* ── QUESTION ── */
+  .question {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 28px 28px 24px;
+    margin-bottom: 22px;
+    box-shadow: 0 1px 4px rgba(0,0,0,.05);
+    transition: box-shadow .2s;
+  }
+  .question:hover { box-shadow: 0 3px 12px rgba(0,0,0,.09); }
+
+  .q-num {
+    font-size: 10px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--gold);
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+  .q-text {
+    font-size: 15.5px;
+    line-height: 1.6;
+    color: var(--ink);
+    margin-bottom: 18px;
+    font-weight: 400;
+  }
+
+  .options { display: flex; flex-direction: column; gap: 9px; }
+
+  .option {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 11px 16px;
+    border: 1.5px solid var(--border);
+    border-radius: 3px;
+    cursor: pointer;
+    transition: all .15s;
+    font-size: 14.5px;
+    line-height: 1.5;
+    color: var(--ink-mid);
+    background: #fff;
+    text-align: left;
+    width: 100%;
+  }
+  .option:hover:not(:disabled) {
+    border-color: var(--crimson-light);
+    background: #FFF5F5;
+    color: var(--ink);
+  }
+  .option .letter {
+    min-width: 22px; height: 22px;
+    border-radius: 50%;
+    background: var(--border);
+    color: var(--ink-mid);
+    font-size: 11px;
+    font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    margin-top: 1px;
+    transition: all .15s;
+  }
+  .option:hover:not(:disabled) .letter {
+    background: var(--crimson-light);
+    color: #fff;
+  }
+  .option.selected { border-color: var(--crimson); background: #FFF5F5; }
+  .option.selected .letter { background: var(--crimson); color: #fff; }
+
+  .option.correct { border-color: var(--correct); background: var(--correct-bg); color: var(--correct); }
+  .option.correct .letter { background: var(--correct); color: #fff; }
+  .option.wrong { border-color: var(--wrong); background: var(--wrong-bg); color: var(--wrong); }
+  .option.wrong .letter { background: var(--wrong); color: #fff; }
+  .option:disabled { cursor: default; }
+
+  .feedback {
+    display: none;
+    margin-top: 14px;
+    padding: 12px 16px;
+    border-radius: 3px;
+    font-size: 13.5px;
+    line-height: 1.6;
+  }
+  .feedback.show { display: block; }
+  .feedback.ok { background: var(--correct-bg); color: var(--correct); border-left: 3px solid var(--correct); }
+  .feedback.fail { background: var(--wrong-bg); color: var(--wrong); border-left: 3px solid var(--wrong); }
+
+  /* ── SUBMIT / SCORE ── */
+  .exam-footer { margin-top: 36px; text-align: center; }
+
+  .btn-submit {
+    background: var(--crimson);
+    color: #fff;
+    border: none;
+    font-family: 'Playfair Display', serif;
+    font-size: 17px;
+    padding: 15px 52px;
+    border-radius: 3px;
+    cursor: pointer;
+    letter-spacing: 1px;
+    transition: background .2s, transform .1s;
+  }
+  .btn-submit:hover { background: var(--ink); }
+  .btn-submit:active { transform: scale(.98); }
+  .btn-submit:disabled { background: var(--border); cursor: default; }
+
+  .btn-reset {
+    background: none;
+    border: 2px solid var(--crimson);
+    color: var(--crimson);
+    font-family: 'Source Serif 4', serif;
+    font-size: 14px;
+    padding: 11px 32px;
+    border-radius: 3px;
+    cursor: pointer;
+    margin-top: 14px;
+    transition: all .2s;
+    display: none;
+  }
+  .btn-reset:hover { background: var(--crimson); color: #fff; }
+
+  .score-box {
+    display: none;
+    background: var(--ink);
+    color: var(--cream);
+    border-radius: 6px;
+    padding: 32px 40px;
+    margin-top: 30px;
+    text-align: center;
+    animation: popIn .35s cubic-bezier(.34,1.56,.64,1);
+  }
+  @keyframes popIn {
+    from { transform: scale(.92); opacity: 0; }
+    to   { transform: scale(1);   opacity: 1; }
+  }
+  .score-box .score-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 64px;
+    color: var(--gold);
+    line-height: 1;
+  }
+  .score-box .score-label {
+    font-size: 13px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    opacity: .6;
+    margin-top: 6px;
+  }
+  .score-box .score-msg {
+    margin-top: 16px;
+    font-size: 15px;
+    font-style: italic;
+    opacity: .85;
+  }
+
+  @media (max-width: 600px) {
+    .tab-btn { padding: 14px 16px; font-size: 11px; letter-spacing: 1px; }
+    .exam-panel { padding: 28px 14px 60px; }
+    .question { padding: 20px 16px 18px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-label">ETM · UPCH 2023</div>
+  <h1>Fisiología del Sistema<br>Cardiovascular</h1>
+  <p class="hero-sub">Tres exámenes de 20 preguntas cada uno</p>
+</div>
+
+<div class="tabs">
+  <button class="tab-btn active" onclick="showExam(1)">Examen I</button>
+  <button class="tab-btn" onclick="showExam(2)">Examen II</button>
+  <button class="tab-btn" onclick="showExam(3)">Examen III</button>
+</div>
+
+<!-- ═══════════════════════════════════════════ EXAMEN 1 ═══ -->
+<div class="exam-panel active" id="exam1">
+  <div class="exam-header">
+    <h2>Examen I — Potencial de Acción y Músculo Cardíaco</h2>
+    <p>Selecciona la alternativa correcta en cada pregunta. Cuando termines, presiona "Calificar".</p>
+  </div>
+
+  <!-- Q1 -->
+  <div class="question" id="e1q1">
+    <div class="q-num">Pregunta 01</div>
+    <div class="q-text">¿Qué ocurre en la Fase 0 del potencial de acción de la célula miocárdica?</div>
+    <div class="options">
+      <button class="option" onclick="select(this,'e1q1','A')"><span class="letter">A</span> Apertura de canales lentos de Ca++ que produce la meseta</button>
+      <button class="option" onclick="select(this,'e1q1','B')"><span class="letter">B</span> Apertura de canales rápidos de Na+ que genera una despolarización rápida</button>
+      <button class="option" onclick="select(this,'e1q1','C')"><span class="letter">C</span> Cierre de canales de K+ que inicia la repolarización</button>
+      <button class="option" onclick="select(this,'e1q1','D')"><span class="letter">D</span> Activación de la bomba Na+/K+ ATPasa para restaurar el reposo</button>
+    </div>
+    <div class="feedback" id="fb-e1q1"></div>
+  </div>
+
+  <!-- Q2 -->
+  <div class="question" id="e1q2">
+    <div class="q-num">Pregunta 02</div>
+    <div class="q-text">La "meseta" del potencial de acción cardíaco (Fase 2) se debe principalmente a:</div>
+    <div class="options">
+      <button class="option" onclick="select(this,'e1q2','A')"><span class="letter">A</span> Apertura de canales rápidos de Na+</button>
+      <button class="option" onclick="select(this,'e1q2','B')"><span class="letter">B</span> Cierre completo de todos los canales iónicos</button>
+      <button class="option" onclick="select(this,'e1q2','C')"><span class="letter">C</span> Apertura de canales lentos de Na+ y Ca++</button>
+      <button class="option" onclick="select(this,'e1q2','D')"><span class="letter">D</span> Acción exclusiva de la bomba Na+/K+ ATPasa</button>
+    </div>
+    <div class="feedback" id="fb-e1q2"></div>
+  </div>
+
+  <!-- Q3 -->
+  <div class="question" id="e1q3">
+    <div class="q-num">Pregunta 03</div>
+    <div class="q-text">¿Cuál es el aporte del túbulo T en la contracción cardíaca en comparación con el retículo endoplásmico liso (REL)?</div>
+    <div class="options">
+      <button class="option" onclick="select(this,'e1q3','A')"><span class="letter">A</span> El REL aporta 5 veces más calcio que el túbulo T</button>
+      <button class="option" onclick="select(this,'e1q3','B')"><span class="letter">B</span> El túbulo T aporta 25 veces más calcio que el REL</button>
+      <button class="option" onclick="select(this,'e1q3','C')"><span class="letter">C</span> Ambos aportan cantidades iguales de calcio</button>
+      <button class="option" onclick="select(this,'e1q3','D')"><span class="letter">D</span> El REL es la única fuente de calcio para la contracción</button>
+    </div>
+    <div class="feedback" id="fb-e1q3"></div>
+  </div>
+
+  <!-- Q4 -->
+  <div class="question" id="e1q4">
+    <div class="q-num">Pregunta 04</div>
+    <div class="q-text">El período refractario cardíaco se caracteriza por:</div>
+    <div class="options">
+      <button class="option" onclick="select(this,'e1q4','A')"><span class="letter">A</span> Ser el tiempo en que la célula puede despolarizarse múltiples veces seguidas</button>
+      <button class="option" onclick="select(this,'e1q4','B')"><span class="letter">B</span> Ser el tiempo en que el potencial de acción se mantiene sobre el umbral sin permitir una nueva descarga</button>
+      <button class="option" onclick="select(this,'e1q4','C')"><span class="letter">C</span> Corresponder únicamente a la Fase 4 del potencial de acción</button>
+      <button class="option" onclick="select(this,'e1q4','D')"><span class="letter">D</span> Depender exclusivamente del calcio intracelular</button>
+    </div>
+    <div class="feedback" id="fb-e1q4"></div>
+  </div>
+
+  <!-- Q5 -->
+  <div class="question" id="e1q5">
+    <div class="q-num">Pregunta 05</div>
+    <div class="q-text">Respecto a la conducción eléctrica en el nodo AV, ¿cuánto tiempo tarda el impulso en atravesarlo?</div>
+    <div class="options">
+      <button class="option" onclick="select(this,'e1q5','A')"><span class="letter">A</span> 0.03 segundos</button>
+      <button class="option" onclick="select(this,'e1q5','B')"><span class="letter">B</span> 0.09 segundos</button>
+      <button class="option" onclick="select(this,'e1q5','C')"><span class="letter">C</span> 0.30 segundos</button>
+      <button class="option" onclick="select(this,'e1q5','D')"><span class="letter">D</span> 0.25 segundos</button>
+    </div>
+    <div class="feedback" id="fb-e1q5"></div>
+  </div>
+
+  <!-- Q6 -->
+  <div class="question" id="e1q6">
+    <div class="q-num">Pregunta 06</div>
+    <div class="q-text">Las fibras de Purkinje se ubican en el subendocardio y tienen una velocidad de conducción de:</div>
+    <div class="options">
+      <button class="option" onclick="select(this,'e1q6','A')"><span class="letter">A</span> 0.3 a 0.5 m/s</button>
+      <button class="option" onclick="select(this,'e1q6','B')"><span class="letter">B</span> 1 m/s</button>
+      <button class="option" onclick="select(this,'e1q6','C')"><span class="letter">C</span> 1.5 a 4 m/s</button>
+      <button class="option" onclick="select(this,'e1q6','D')"><span class="letter">D</span> 6 a 8 m/s</button>
+    </div>
+    <div class="feedback" id="fb-e1q6"></div>
+  </div>
+
+  <!-- Q7 -->
+  <div class="question" id="e1q7">
+    <div class="q-num">Pregunta 07</div>
+    <div class="q-text">¿Cuál es el potencial de membrana en reposo del nodo sinusal que lo mantiene cerca del umbral?</div>
+    <div class="options">
+      <button class="option" onclick="select(this,'e1q7','A')"><span class="letter">A</span> -90 mV</button>
+      <button class="option" onclick="select(this,'e1q7','B')"><span class="letter">B</span> -70 mV</button>
+      <button class="option" onclick="select(this,'e1q7','C')"><span class="letter">C</span> -55 mV a -40 mV</button>
+      <button class="option" onclick="select(this,'e1q7','D')"><span class="letter">D</span> 0 mV</button>
+    </div>
+    <div class="feedback" id="fb-e1q7"></div>
+  </div>
+
+  <!-- Q8 -->
+  <div class="question" id="e1q8">
+    <div class="q-num">Pregunta 08</div>
+    <div class="q-text">Según la ley de Frank-Starling (contracción de la fibra muscular cardíaca), ¿qué ocurre a mayor elongación del miocardio?</div>
+    <div class="options">
+      <button class="option" onclick="select(this,'e1q8','A')"><span class="letter">A</span> Menor fuerza de contracción</button>
+      <button class="option" onclick="select(this,'e1q8','B')"><span class="letter">B</span> Mayor fuerza de contracción o acortamiento</button>
+      <button class="option" onclick="select(this,'e1q8','C')"><span class="letter">C</span> La fuerza de contracción no varía con el estiramiento</button>
+      <button class="option" onclick="select(this,'e1q8','D')"><span class="letter">D</span> Disminuye la entrada de calcio al sarcómero</button>
+    </div>
+    <div class="feedback" id="fb-e1q8"></div>
+  </div>
+
+  <!-- Q9 -->
+  <div class="question" id="e1q9">
+    <div class="q-num">Pregunta 09</div>
+    <div class="q-text">¿Qué proteína cubre los sitios activos de la actina impidiendo la unión con miosina en reposo?</div>
+    <div class="options">
+      <button class="option" onclick="select(this,'e1q9','A')"><span class="letter">A</span> Teletonina</button>
+      <button class="option" onclick="select(this,'e1q9','B')"><span class="letter">B</span> Troponina</button>
+      <button class="option" onclick="select(this,'e1q9','C')"><span class="letter">C</span> Tropomiosina</button>
+      <button class="option" onclick="select(this,'e1q9','D')"><span class="letter">D</span> Desmina</button>
+    </div>
+    <div class="feedback" id="fb-e1q9"></div>
+  </div>
+
+  <!-- Q10 -->
+  <div class="question" id="e1q10">
+    <div class="q-num">Pregunta 10</div>
+    <div class="q-text">Los estímulos simpáticos β1-adrenérgicos sobre el nodo sinusal producen:</div>
+    <div class="options">
+      <button class="option" onclick="select(this,'e1q10','A')"><span class="letter">A</span> Disminución de la frecuencia cardíaca (cronotropismo negativo)</button>
+      <button class="option" onclick="select(this,'e1q10','B')"><span class="letter">B</span> Vasodilatación coronaria exclusivamente</button>
+      <button class="option" onclick="select(this,'e1q10','C')"><span class="letter">C</span> Aumento de la frecuencia cardíaca (cronotropismo positivo)</button>
+      <button class="option" onclick="select(this,'e1q10','D')"><span class="letter">D</span> Bloqueo completo de los canales de calcio</button>
+    </div>
+    <div class="feedback" id="fb-e1q10"></div>
+  </div>
+
+  <!-- Q11 -->
+  <div class="question" id="e1q11">
+    <div class="q-num">Pregunta 11</div>
+    <div class="q-text">En la Fase 3 del potencial de acción cardíaco (repolarización), ¿qué evento iónico predomina?</div>
+    <div class="options">
+      <button class="option" onclick="select(this,'e1q11','A')"><span class="letter">A</span> Apertura de canales rápidos de Na+</button>
+      <button class="option" onclick="select(this,'e1q11','B')"><span class="letter">B</span> Apertura de canales lentos de Ca++</button>
+      <button class="option" onclick="select(this,'e1q11','C')"><span class="letter">C</span> Apertura de canales de K+ y cierre de canales lentos</button>
+      <button class="option" onclick="select(this,'e1q11','D')"><span class="letter">D</span> Activación exclusiva de la bomba Ca++/Na+</button>
+    </div>
+    <div class="feedback" id="fb-e1q11"></div>
+  </div>
+
+  <!-- Q12 -->
+  <div class="question" id="e1q12">
+    <div class="q-num">Pregunta 12</div>
+    <div class="q-text">¿Cuál es la velocidad de conducción a través de las bandas interauriculares (de nodo sinusal a nodo AV)?</div>
+    <div class="options">
+      <button class="option" onclick="select(this,'e1q12','A')"><span class="letter">A</span> 0.3 m/s</button>
+      <button class="option" onclick="select(this,'e1q12','B')"><span class="letter">B</span> Hasta 1 m/s</button>
+      <button class="option" onclick="select(this,'e1q12','C')"><span class="letter">C</span> 4 m/s</button>
+      <button class="option" onclick="select(this,'e1q12','D')"><span class="letter">D</span> 0.04 m/s</button>
+    </div>
+    <div class="feedback" id="fb-e1q12"></div>
+  </div>
+
+  <!-- Q13 -->
+  <div class="question" id="e1q13">
+    <div class="q-num">Pregunta 13</div>
+    <div class="q-text">¿En qué estructura anatómica del corazón NO conduce la electricidad, forzando al impulso a pasar únicamente por el nodo AV?</div>
+    <div class="options">
+      <button class="option" onclick="select(this,'e1q13','A')"><span class="letter">A</span> Las fibras de Purkinje</button>
+      <button class="option" onclick="select(this,'e1q13','B')"><span class="letter">B</span> Los anillos fibrosos (tejido conectivo denso)</button>
+      <button class="option" onclick="select(this,'e1q13','C')"><span class="letter">C</span> El has de His</button>
+      <button class="option" onclick="select(this,'e1q13','D')"><span class="letter">D</span> Las uniones comunicantes (discos intercalares)</button>
+    </div>
+    <div class="feedback" id="fb-e1q13"></div>
+  </div>
+
+  <!-- Q14 -->
+  <div class="question" id="e1q14">
+    <div class="q-num">Pregunta 14</div>
+    <div class="q-text">El potencial de acción ventricular dura aproximadamente:</div>
+    <div class="options">
+      <button class="option" onclick="select(this,'e1q14','A')"><span class="letter">A</span> 0.03 a 0.05 segundos</button>
+      <button class="option" onclick="select(this,'e1q14','B')"><span class="letter">B</span> 0.25 a 0.35 segundos</button>
+      <button class="option" onclick="select(this,'e1q14','C')"><span class="letter">C</span> 0.50 a 0.80 segundos</button>
+      <button class="option" onclick="select(this,'e1q14','D')"><span class="letter">D</span> 1.0 a 1.5 segundos</button>
+    </div>
+    <div class="feedback" id="fb-e1q14"></div>
+  </div>
+
+  <!-- Q15 -->
+  <div class="question" id="e1q15">
+    <div class="q-num">Pregunta 15</div>
+    <div class="q-text">En el electrocardiograma, la onda P representa:</div>
+    <div class="options">
+      <button class="option" onclick="select(this,'e1q15','A')"><span class="letter">A</span> La despolarización ventricular</button>
+      <button class="option" onclick="select(this,'e1q15','B')"><span class="letter">B</span> La repolarización ventricular</button>
+      <button class="option" onclick="select(this,'e1q15','C')"><span class="letter">C</span> La contracción (despolarización) auricular</button>
+      <button class="option" onclick="select(this,'e1q15','D')"><span class="letter">D</span> El cierre de las válvulas sigmoideas</button>
+    </div>
+    <div class="feedback" id="fb-e1q15"></div>
+  </div>
+
+  <!-- Q16 -->
+  <div class="question" id="e1q16">
+    <div class="q-num">Pregunta 16</div>
+    <div class="q-text">En el papel del electrocardiograma a velocidad estándar, cada cuadradito pequeño equivale a:</div>
+    <div class="options">
+      <button class="option" onclick="select(this,'e1q16','A')"><span class="letter">A</span> 0.20 segundos</button>
+      <button class="option" onclick="select(this,'e1q16','B')"><span class="letter">B</span> 0.1 mV de altura y 0.04 segundos</button>
+      <button class="option" onclick="select(this,'e1q16','C')"><span class="letter">C</span> 1 mV de altura y 0.20 segundos</button>
+      <button class="option" onclick="select(this,'e1q16','D')"><span class="letter">D</span> 0.04 mV de altura y 0.1 segundos</button>
+    </div>
+    <div class="feedback" id="fb-e1q16"></div>
+  </div>
+
+  <!-- Q17 -->
+  <div class="question" id="e1q17">
+    <div class="q-num">Pregunta 17</div>
+    <div class="q-text">El Triángulo de Einthoven define las derivadas bipolares. ¿Cuál es el ángulo de la Derivada II?</div>
+    <div class="options">
+      <button class="option" onclick="select(this,'e1q17','A')"><span class="letter">A</span> 0°</button>
+      <button class="option" onclick="select(this,'e1q17','B')"><span class="letter">B</span> 60°</button>
+      <button class="option" onclick="select(this,'e1q17','C')"><span class="letter">C</span> 90°</button>
+      <button class="option" onclick="select(this,'e1q17','D')"><span class="letter">D</span> 120°</button>
+    </div>
+    <div class="feedback" id="fb-e1q17"></div>
+  </div>
+
+  <!-- Q18 -->
+  <div class="question" id="e1q18">
+    <div class="q-num">Pregunta 18</div>
+    <div class="q-text">¿Qué fase del ciclo cardíaco inicia con el cierre de las válvulas AV y genera el 1er ruido cardíaco, aumentando la presión ventricular sin cambio de volumen?</div>
+    <div class="options">
+      <button class="option" onclick="select(this,'e1q18','A')"><span class="letter">A</span> Relajación isovolumétrica</button>
+      <button class="option" onclick="select(this,'e1q18','B')"><span class="letter">B</span> Eyección ventricular</button>
+      <button class="option" onclick="select(this,'e1q18','C')"><span class="letter">C</span> Contracción isovolumétrica</button>
+      <button class="option" onclick="select(this,'e1q18','D')"><span class="letter">D</span> Llenado ventricular rápido</button>
+    </div>
+    <div class="feedback" id="fb-e1q18"></div>
+  </div>
+
+  <!-- Q19 -->
+  <div class="question" id="e1q19">
+    <div class="q-num">Pregunta 19</div>
+    <div class="q-text">Durante el llenado ventricular en diástole, ¿qué porcentaje corresponde al llenado pasivo desde la aurícula?</div>
+    <div class="options">
+      <button class="option" onclick="select(this,'e1q19','A')"><span class="letter">A</span> 20%</button>
+      <button class="option" onclick="select(this,'e1q19','B')"><span class="letter">B</span> 50%</button>
+      <button class="option" onclick="select(this,'e1q19','C')"><span class="letter">C</span> 80%</button>
+      <button class="option" onclick="select(this,'e1q19','D')"><span class="letter">D</span> 100%</button>
+    </div>
+    <div class="feedback" id="fb-e1q19"></div>
+  </div>
+
+  <!-- Q20 -->
+  <div class="question" id="e1q20">
+    <div class="q-num">Pregunta 20</div>
+    <div class="q-text">El 2do ruido cardíaco se produce por:</div>
+    <div class="options">
+      <button class="option" onclick="select(this,'e1q20','A')"><span class="letter">A</span> Cierre de las válvulas AV al inicio de la sístole</button>
+      <button class="option" onclick="select(this,'e1q20','B')"><span class="letter">B</span> Apertura de las válvulas sigmoideas durante la eyección</button>
+      <button class="option" onclick="select(this,'e1q20','C')"><span class="letter">C</span> Cierre de las válvulas sigmoideas (pulmonar y aórtica) al inicio de la diástole</button>
+      <button class="option" onclick="select(this,'e1q20','D')"><span class="letter">D</span> Contracción de la aurícula al final de la diástole</button>
+    </div>
+    <div class="feedback" id="fb-e1q20"></div>
+  </div>
+
+  <div class="exam-footer">
+    <button class="btn-submit" id="submit1" onclick="gradeExam(1)">Calificar Examen I</button>
+    <br>
+    <button class="btn-reset" id="reset1" onclick="resetExam(1)">Reiniciar</button>
+    <div class="score-box" id="score1"></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════ EXAMEN 2 ═══ -->
+<div class="exam-panel" id="exam2">
+  <div class="exam-header">
+    <h2>Examen II — Fisiología Circulatoria y Presión Arterial</h2>
+    <p>Selecciona la alternativa correcta en cada pregunta. Cuando termines, presiona "Calificar".</p>
+  </div>
+
+  <!-- Q1 -->
+  <div class="question" id="e2q1">
+    <div class="q-num">Pregunta 01</div>
+    <div class="q-text">La velocidad del flujo sanguíneo (V) y la superficie transversal vascular (A) se relacionan de forma:</div>
+    <div class="options">
+      <button class="option" onclick="select(this,'e2q1','A')"><span class="letter">A</span> Directamente proporcional (V = A)</button>
+      <button class="option" onclick="select(this,'e2q1','B')"><span class="letter">B</span> Inversamente proporcional (V = F/A)</button>
+      <button class="option" onclick="select(this,'e2q1','C')"><span class="letter">C</span> Sin relación matemática</button>
+      <button class="option" onclick="select(this,'e2q1','D')"><span class="letter">D</span> V es igual al cuadrado de A</button>
+    </div>
+    <div class="feedback" id="fb-e2q1"></div>
+  </div>
+
+  <!-- Q2 -->
+  <div class="question" id="e2q2">
+    <div class="q-num">Pregunta 02</div>
+    <div class="q-text">¿Qué porcentaje de la distribución sistémica del flujo sanguíneo se encuentra en las venas?</div>
+    <div class="options">
+      <button class="option" onclick="select(this,'e2q2','A')"><span class="letter">A</span> 13%</button>
+      <button class="option" onclick="select(this,'e2q2','B')"><span class="letter">B</span> 7%</button>
+      <button class="option" onclick="select(this,'e2q2','C')"><span class="letter">C</span> 64%</button>
+      <button class="option" onclick="select(this,'e2q2','D')"><span class="letter">D</span> 84%</button>
+    </div>
+    <div class="feedback" id="fb-e2q2"></div>
+  </div>
+
+  <!-- Q3 -->
+  <div class="question" id="e2q3">
+    <div class="q-num">Pregunta 03</div>
+    <div class="q-text">Según la Ley de Poiseuille, el flujo sanguíneo es proporcional al radio del vaso elevado a la:</div>
+    <div class="options">
+      <button class="option" onclick="select(this,'e2q3','A')"><span class="letter">A</span> Primera potencia</button>
+      <button class="option" onclick="select(this,'e2q3','B')"><span class="letter">B</span> Segunda potencia</button>
+      <button class="option" onclick="select(this,'e2q3','C')"><span class="letter">C</span> Cuarta potencia</button>
+      <button class="option" onclick="select(this,'e2q3','D')"><span class="letter">D</span> Décima potencia</button>
+    </div>
+    <div class="feedback" id="fb-e2q3"></div>
+  </div>
+
+  <!-- Q4 -->
+  <div class="question" id="e2q4">
+    <div class="q-num">Pregunta 04</div>
+    <div class="q-text">El número de Reynolds mayor a 2,000 indica:</div>
+    <div class="options">
+      <button class="option" onclick="select(this,'e2q4','A')"><span class="letter">A</span> Flujo laminar en todos los vasos</button>
+      <button class="option" onclick="select(this,'e2q4','B')"><span class="letter">B</span> Turbulencias incluso en vasos rectos pequeños</button>
+      <button class="option" onclick="select(this,'e2q4','C')"><span class="letter">C</span> Flujo parabólico óptimo</button>
+      <button class="option" onclick="select(this,'e2q4','D')"><span class="letter">D</span> Ausencia completa de fricción</button>
+    </div>
+    <div class="feedback" id="fb-e2q4"></div>
+  </div>
+
+  <!-- Q5 -->
+  <div class="question" id="e2q5">
+    <div class="q-num">Pregunta 05</div>
+    <div class="q-text">¿Cuál es la fórmula correcta de la Presión Arterial Media (PAM)?</div>
+    <div class="options">
+      <button class="option" onclick="select(this,'e2q5','A')"><span class="letter">A</span> PAM = PS + PD / 2</button>
+      <button class="option" onclick="select(this,'e2q5','B')"><span class="letter">B</span> PAM = PD + (PS − PD) / 3</button>
+      <button class="option" onclick="select(this,'e2q5','C')"><span class="letter">C</span> PAM = PS − PD</button>
+      <button class="option" onclick="select(this,'e2q5','D')"><span class="letter">D</span> PAM = PS × PD</button>
+    </div>
+    <div class="feedback" id="fb-e2q5"></div>
+  </div>
+
+  <!-- Q6 -->
+  <div class="question" id="e2q6">
+    <div class="q-num">Pregunta 06</div>
+    <div class="q-text">En la medición de la presión arterial según Korotkoff, ¿qué fase indica la Presión Arterial Sistólica?</div>
+    <div class="options">
+      <button class="option" onclick="select(this,'e2q6','A')"><span class="letter">A</span> Fase 3</button>
+      <button class="option" onclick="select(this,'e2q6','B')"><span class="letter">B</span> Fase 5</button>
+      <button class="option" onclick="select(this,'e2q6','C')"><span class="letter">C</span> Fase 1</button>
+      <button class="option" onclick="select(this,'e2q6','D')"><span class="letter">D</span> Fase 4</button>
+    </div>
+    <div class="feedback" id="fb-e2q6"></div>
+  </div>
+
+  <!-- Q7 -->
+  <div class="question" id="e2q7">
+    <div class="q-num">Pregunta 07</div>
+    <div class="q-text">¿Cuál es el valor normal de presión arterial sistólica en un adulto sano?</div>
+    <div class="options">
+      <button class="option" onclick="select(this,'e2q7','A')"><span class="letter">A</span> > 90 mmHg y < 130 mmHg</button>
+      <button class="option" onclick="select(this,'e2q7','B')"><span class="letter">B</span> > 60 mmHg y < 90 mmHg</button>
+      <button class="option" onclick="select(this,'e2q7','C')"><span class="letter">C</span> > 130 mmHg y < 160 mmHg</button>
+      <button class="option" onclick="select(this,'e2q7','D')"><span class="letter">D</span> > 140 mmHg y < 180 mmHg</button>
+    </div>
+    <div class="feedback" id="fb-e2q7"></div>
+  </div>
+
+  <!-- Q8 -->
+  <div class="question" id="e2q8">
+    <div class="q-num">Pregunta 08</div>
+    <div class="q-text">La Compliance vascular se calcula como:</div>
+    <div class="options">
+      <button class="option" onclick="select(this,'e2q8','A')"><span class="letter">A</span> Compliance = Presión / Volumen</button>
+      <button class="option" onclick="select(this,'e2q8','B')"><span class="letter">B</span> Compliance = Volumen × Distensibilidad</button>
+      <button class="option" onclick="select(this,'e2q8','C')"><span class="letter">C</span> Compliance = Resistencia × Flujo</button>
+      <button class="option" onclick="select(this,'e2q8','D')"><span class="letter">D</span> Compliance = Radio⁴ / Viscosidad</button>
+    </div>
+    <div class="feedback" id="fb-e2q8"></div>
+  </div>
+
+  <!-- Q9 -->
+  <div class="question" id="e2q9">
+    <div class="q-num">Pregunta 09</div>
+    <div class="q-text">¿Qué ocurre con la presión de pulso en personas con arterioesclerosis?</div>
+    <div class="options">
+      <button class="option" onclick="select(this,'e2q9','A')"><span class="letter">A</span> Disminuye porque el vaso no se expande</button>
+      <button class="option" onclick="select(this,'e2q9','B')"><span class="letter">B</span> Se mantiene igual ya que la FC no cambia</button>
+      <button class="option" onclick="select(this,'e2q9','C')"><span class="letter">C</span> Aumenta porque la compliance disminuye</button>
+      <button class="option" onclick="select(this,'e2q9','D')"><span class="letter">D</span> Desaparece porque las arterias no pulsan</button>
+    </div>
+    <div class="feedback" id="fb-e2q9"></div>
+  </div>
+
+  <!-- Q10 -->
+  <div class="question" id="e2q10">
+    <div class="q-num">Pregunta 10</div>
+    <div class="q-text">La resistencia vascular periférica total equivale a:</div>
+    <div class="options">
+      <button class="option" onclick="select(this,'e2q10','A')"><span class="letter">A</span> La resistencia del vaso de mayor calibre únicamente</button>
+      <button class="option" onclick="select(this,'e2q10','B')"><span class="letter">B</span> La sumatoria de las resistencias individuales de calibres similares al corte transversal</button>
+      <button class="option" onclick="select(this,'e2q10','C')"><span class="letter">C</span> El producto de la viscosidad por la longitud</button>
+      <button class="option" onclick="select(this,'e2q10','D')"><span class="letter">D</span> Solo la resistencia arteriolar</button>
+    </div>
+    <div class="feedback" id="fb-e2q10"></div>
+  </div>
+
+  <!-- Q11 -->
+  <div class="question" id="e2q11">
+    <div class="q-num">Pregunta 11</div>
+    <div class="q-text">La presión en la aurícula derecha en condiciones normales es:</div>
+    <div class="options">
+      <button class="option" onclick="select(this,'e2q11','A')"><span class="letter">A</span> 15 a 20 mmHg</button>
+      <button class="option" onclick="select(this,'e2q11','B')"><span class="letter">B</span> 0 a -5 mmHg</button>
+      <button class="option" onclick="select(this,'e2q11','C')"><span class="letter">C</span> 80 a 120 mmHg</button>
+      <button class="option" onclick="select(this,'e2q11','D')"><span class="letter">D</span> 30 a 40 mmHg</button>
+    </div>
+    <div class="feedback" id="fb-e2q11"></div>
+  </div>
+
+  <!-- Q12 -->
+  <div class="question" id="e2q12">
+    <div class="q-num">Pregunta 12</div>
+    <div class="q-text">El mercurio utilizado en el tensiómetro es cuántas veces más denso que el agua:</div>
+    <div class="options">
+      <button class="option" onclick="select(this,'e2q12','A')"><span class="letter">A</span> 5 veces</button>
+      <button class="option" onclick="select(this,'e2q12','B')"><span class="letter">B</span> 8 veces</button>
+      <button class="option" onclick="select(this,'e2q12','C')"><span class="letter">C</span> 13.6 veces</button>
+      <button class="option" onclick="select(this,'e2q12','D')"><span class="letter">D</span> 20 veces</button>
+    </div>
+    <div class="feedback" id="fb-e2q12"></div>
+  </div>
+
+  <!-- Q13 -->
+  <div class="question" id="e2q13">
+    <div class="q-num">Pregunta 13</div>
+    <div class="q-text">¿Cuál de las siguientes opciones aumenta la viscosidad de la sangre?</div>
+    <div class="options">
+      <button class="option" onclick="select(this,'e2q13','A')"><span class="letter">A</span> Disminución del hematocrito</button>
+      <button class="option" onclick="select(this,'e2q13','B')"><span class="letter">B</span> Aumento del hematocrito y aumento de proteínas plasmáticas</button>
+      <button class="option" onclick="select(this,'e2q13','C')"><span class="letter">C</span> Hidratación abundante</button>
+      <button class="option" onclick="select(this,'e2q13','D')"><span class="letter">D</span> Vasodilatación arteriolar</button>
+    </div>
+    <div class="feedback" id="fb-e2q13"></div>
+  </div>
+
+  <!-- Q14 -->
+  <div class="question" id="e2q14">
+    <div class="q-num">Pregunta 14</div>
+    <div class="q-text">El gasto cardíaco (GC) en un adulto de 60 kg en reposo es aproximadamente:</div>
+    <div class="options">
+      <button class="option" onclick="select(this,'e2q14','A')"><span class="letter">A</span> 2 litros/minuto</button>
+      <button class="option" onclick="select(this,'e2q14','B')"><span class="letter">B</span> 5 litros/minuto</button>
+      <button class="option" onclick="select(this,'e2q14','C')"><span class="letter">C</span> 10 litros/minuto</button>
+      <button class="option" onclick="select(this,'e2q14','D')"><span class="letter">D</span> 15 litros/minuto</button>
+    </div>
+    <div class="feedback" id="fb-e2q14"></div>
+  </div>
+
+  <!-- Q15 -->
+  <div class="question" id="e2q15">
+    <div class="q-num">Pregunta 15</div>
+    <div class="q-text">Si se extirpa un órgano, ¿qué ocurre con la resistencia vascular periférica?</div>
+    <div class="options">
+      <button class="option" onclick="select(this,'e2q15','A')"><span class="letter">A</span> Disminuye porque hay menos órganos que irrigar</button>
+      <button class="option" onclick="select(this,'e2q15','B')"><span class="letter">B</span> Aumenta porque se pierde un lecho vascular en paralelo</button>
+      <button class="option" onclick="select(this,'e2q15','C')"><span class="letter">C</span> No cambia, la resistencia es constante</button>
+      <button class="option" onclick="select(this,'e2q15','D')"><span class="letter">D</span> Disminuye porque se reduce la longitud total del sistema</button>
+    </div>
+    <div class="feedback" id="fb-e2q15"></div>
+  </div>
+
+  <!-- Q16 -->
+  <div class="question" id="e2q16">
+    <div class="q-num">Pregunta 16</div>
+    <div class="q-text">¿Qué parámetro representa la "precarga" cardíaca?</div>
+    <div class="options">
+      <button class="option" onclick="select(this,'e2q16','A')"><span class="letter">A</span> El volumen de sangre que sale del corazón</button>
+      <button class="option" onclick="select(this,'e2q16','B')"><span class="letter">B</span> La resistencia arterial que debe vencer el ventrículo</button>
+      <button class="option" onclick="select(this,'e2q16','C')"><span class="letter">C</span> El volumen de sangre que llega al corazón (retorno venoso)</button>
+      <button class="option" onclick="select(this,'e2q16','D')"><span class="letter">D</span> La presión en la aorta durante la eyección</button>
+    </div>
+    <div class="feedback" id="fb-e2q16"></div>
+  </div>
+
+  <!-- Q17 -->
+  <div class="question" id="e2q17">
+    <div class="q-num">Pregunta 17</div>
+    <div class="q-text">Al medir la presión arterial con tensiómetro, ¿a qué altura debe estar el brazo del paciente?</div>
+    <div class="options">
+      <button class="option" onclick="select(this,'e2q17','A')"><span class="letter">A</span> Por encima de la cabeza</button>
+      <button class="option" onclick="select(this,'e2q17','B')"><span class="letter">B</span> A la altura del corazón</button>
+      <button class="option" onclick="select(this,'e2q17','C')"><span class="letter">C</span> Por debajo de la cintura</button>
+      <button class="option" onclick="select(this,'e2q17','D')"><span class="letter">D</span> No importa la altura</button>
+    </div>
+    <div class="feedback" id="fb-e2q17"></div>
+  </div>
+
+  <!-- Q18 -->
+  <div class="question" id="e2q18">
+    <div class="q-num">Pregunta 18</div>
+    <div class="q-text">Las venas son más ________ que las arterias, lo que les permite almacenar grandes volúmenes con pequeños cambios de presión.</div>
+    <div class="options">
+      <button class="option" onclick="select(this,'e2q18','A')"><span class="letter">A</span> Rígidas</button>
+      <button class="option" onclick="select(this,'e2q18','B')"><span class="letter">B</span> Resistentes</button>
+      <button class="option" onclick="select(this,'e2q18','C')"><span class="letter">C</span> Distensibles</button>
+      <button class="option" onclick="select(this,'e2q18','D')"><span class="letter">D</span> Conductoras</button>
+    </div>
+    <div class="feedback" id="fb-e2q18"></div>
+  </div>
+
+  <!-- Q19 -->
+  <div class="question" id="e2q19">
+    <div class="q-num">Pregunta 19</div>
+    <div class="q-text">¿Cuándo debe reiniciarse la insuflación del manguito al medir la PA?</div>
+    <div class="options">
+      <button class="option" onclick="select(this,'e2q19','A')"><span class="letter">A</span> Insuflar hasta que el paciente sienta dolor</button>
+      <button class="option" onclick="select(this,'e2q19','B')"><span class="letter">B</span> Insuflar hasta 20 mmHg por encima del último latido escuchado</button>
+      <button class="option" onclick="select(this,'e2q19','C')"><span class="letter">C</span> Insuflar hasta 200 mmHg siempre</button>
+      <button class="option" onclick="select(this,'e2q19','D')"><span class="letter">D</span> Insuflar exactamente hasta 120 mmHg</button>
+    </div>
+    <div class="feedback" id="fb-e2q19"></div>
+  </div>
+
+  <!-- Q20 -->
+  <div class="question" id="e2q20">
+    <div class="q-num">Pregunta 20</div>
+    <div class="q-text">Cuatro sistemas fundamentales controlan la presión arterial sistémica. ¿Cuál NO es uno de ellos?</div>
+    <div class="options">
+      <button class="option" onclick="select(this,'e2q20','A')"><span class="letter">A</span> Barorreceptores arteriales</button>
+      <button class="option" onclick="select(this,'e2q20','B')"><span class="letter">B</span> Sistema renina-angiotensina-aldosterona</button>
+      <button class="option" onclick="select(this,'e2q20','C')"><span class="letter">C</span> Metabolismo hidrosalino</button>
+      <button class="option" onclick="select(this,'e2q20','D')"><span class="letter">D</span> Sistema complemento del plasma</button>
+    </div>
+    <div class="feedback" id="fb-e2q20"></div>
+  </div>
+
+  <div class="exam-footer">
+    <button class="btn-submit" id="submit2" onclick="gradeExam(2)">Calificar Examen II</button>
+    <br>
+    <button class="btn-reset" id="reset2" onclick="resetExam(2)">Reiniciar</button>
+    <div class="score-box" id="score2"></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════ EXAMEN 3 ═══ -->
+<div class="exam-panel" id="exam3">
+  <div class="exam-header">
+    <h2>Examen III — Regulación del Flujo, Gasto Cardíaco y Sistema Nervioso</h2>
+    <p>Selecciona la alternativa correcta en cada pregunta. Cuando termines, presiona "Calificar".</p>
+  </div>
+
+  <!-- Q1 -->
+  <div class="question" id="e3q1">
+    <div class="q-num">Pregunta 01</div>
+    <div class="q-text">¿Qué efecto tiene el sistema nervioso simpático sobre los vasos sanguíneos y el corazón?</div>
+    <div class="options">
+      <button class="option" onclick="select(this,'e3q1','A')"><span class="letter">A</span> Vasodilatación e inotropismo negativo</button>
+      <button class="option" onclick="select(this,'e3q1','B')"><span class="letter">B</span> Vasoconstricción e inotropismo positivo</button>
+      <button class="option" onclick="select(this,'e3q1','C')"><span class="letter">C</span> Vasodilatación coronaria exclusiva</button>
+      <button class="option" onclick="select(this,'e3q1','D')"><span class="letter">D</span> No tiene efecto directo sobre los vasos</button>
+    </div>
+    <div class="feedback" id="fb-e3q1"></div>
+  </div>
+
+  <!-- Q2 -->
+  <div class="question" id="e3q2">
+    <div class="q-num">Pregunta 02</div>
+    <div class="q-text">¿Cuál de los siguientes neurotransmisores/receptores dilata las coronarias?</div>
+    <div class="options">
+      <button class="option" onclick="select(this,'e3q2','A')"><span class="letter">A</span> Adrenalina sobre receptores α1</button>
+      <button class="option" onclick="select(this,'e3q2','B')"><span class="letter">B</span> Dopaminérgico</button>
+      <button class="option" onclick="select(this,'e3q2','C')"><span class="letter">C</span> Noradrenalina sobre receptores β2</button>
+      <button class="option" onclick="select(this,'e3q2','D')"><span class="letter">D</span> Acetilcolina sobre receptores muscarínicos cardíacos</button>
+    </div>
+    <div class="feedback" id="fb-e3q2"></div>
+  </div>
+
+  <!-- Q3 -->
+  <div class="question" id="e3q3">
+    <div class="q-num">Pregunta 03</div>
+    <div class="q-text">La hiperemia reactiva ocurre cuando:</div>
+    <div class="options">
+      <button class="option" onclick="select(this,'e3q3','A')"><span class="letter">A</span> Se administra adrenalina sistémica</button>
+      <button class="option" onclick="select(this,'e3q3','B')"><span class="letter">B</span> Tras oclusión de un vaso, se produce vasodilatación refleja posterior con aumento del flujo</button>
+      <button class="option" onclick="select(this,'e3q3','C')"><span class="letter">C</span> El oxígeno arterial es muy elevado</button>
+      <button class="option" onclick="select(this,'e3q3','D')"><span class="letter">D</span> La presión arterial sistémica desciende a 0</button>
+    </div>
+    <div class="feedback" id="fb-e3q3"></div>
+  </div>
+
+  <!-- Q4 -->
+  <div class="question" id="e3q4">
+    <div class="q-num">Pregunta 04</div>
+    <div class="q-text">A nivel capilar, ante hipoxia tisular, ¿qué estructura se relaja para aumentar la perfusión?</div>
+    <div class="options">
+      <button class="option" onclick="select(this,'e3q4','A')"><span class="letter">A</span> Las válvulas venosas</button>
+      <button class="option" onclick="select(this,'e3q4','B')"><span class="letter">B</span> El esfínter precapilar</button>
+      <button class="option" onclick="select(this,'e3q4','C')"><span class="letter">C</span> Los discos intercalares</button>
+      <button class="option" onclick="select(this,'e3q4','D')"><span class="letter">D</span> Las células endoteliales venosas</button>
+    </div>
+    <div class="feedback" id="fb-e3q4"></div>
+  </div>
+
+  <!-- Q5 -->
+  <div class="question" id="e3q5">
+    <div class="q-num">Pregunta 05</div>
+    <div class="q-text">¿Qué molécula de origen metabólico produce vasodilatación local al igual que la hipoxia?</div>
+    <div class="options">
+      <button class="option" onclick="select(this,'e3q5','A')"><span class="letter">A</span> Angiotensina II</button>
+      <button class="option" onclick="select(this,'e3q5','B')"><span class="letter">B</span> Endotelina</button>
+      <button class="option" onclick="select(this,'e3q5','C')"><span class="letter">C</span> Adenosina</button>
+      <button class="option" onclick="select(this,'e3q5','D')"><span class="letter">D</span> Aldosterona</button>
+    </div>
+    <div class="feedback" id="fb-e3q5"></div>
+  </div>
+
+  <!-- Q6 -->
+  <div class="question" id="e3q6">
+    <div class="q-num">Pregunta 06</div>
+    <div class="q-text">¿Cuál es la fórmula del Gasto Cardíaco (GC)?</div>
+    <div class="options">
+      <button class="option" onclick="select(this,'e3q6','A')"><span class="letter">A</span> GC = Presión Arterial × Resistencia Periférica</button>
+      <button class="option" onclick="select(this,'e3q6','B')"><span class="letter">B</span> GC = Volumen de Eyección × Frecuencia Cardíaca</button>
+      <button class="option" onclick="select(this,'e3q6','C')"><span class="letter">C</span> GC = Precarga − Postcarga</button>
+      <button class="option" onclick="select(this,'e3q6','D')"><span class="letter">D</span> GC = PAM / Resistencia</button>
+    </div>
+    <div class="feedback" id="fb-e3q6"></div>
+  </div>
+
+  <!-- Q7 -->
+  <div class="question" id="e3q7">
+    <div class="q-num">Pregunta 07</div>
+    <div class="q-text">¿Qué órganos tienen el mayor flujo sanguíneo por gramo de peso tisular por minuto?</div>
+    <div class="options">
+      <button class="option" onclick="select(this,'e3q7','A')"><span class="letter">A</span> Músculo esquelético y piel</button>
+      <button class="option" onclick="select(this,'e3q7','B')"><span class="letter">B</span> Riñones, suprarrenales, tiroides e hígado</button>
+      <button class="option" onclick="select(this,'e3q7','C')"><span class="letter">C</span> Cerebro y pulmones</button>
+      <button class="option" onclick="select(this,'e3q7','D')"><span class="letter">D</span> Huesos y tejido adiposo</button>
+    </div>
+    <div class="feedback" id="fb-e3q7"></div>
+  </div>
+
+  <!-- Q8 -->
+  <div class="question" id="e3q8">
+    <div class="q-num">Pregunta 08</div>
+    <div class="q-text">La vasoconstricción refleja ocurre ante exceso de oxígeno. ¿En cuál situación clínica esto es relevante?</div>
+    <div class="options">
+      <button class="option" onclick="select(this,'e3q8','A')"><span class="letter">A</span> Hipoxia crónica</button>
+      <button class="option" onclick="select(this,'e3q8','B')"><span class="letter">B</span> Ventiladores mecánicos con alto flujo de O₂</button>
+      <button class="option" onclick="select(this,'e3q8','C')"><span class="letter">C</span> Anemia severa</button>
+      <button class="option" onclick="select(this,'e3q8','D')"><span class="letter">D</span> Hemorragia masiva</button>
+    </div>
+    <div class="feedback" id="fb-e3q8"></div>
+  </div>
+
+  <!-- Q9 -->
+  <div class="question" id="e3q9">
+    <div class="q-num">Pregunta 09</div>
+    <div class="q-text">¿Cuál de los siguientes principios describe que el GC es la suma de todos los flujos tisulares?</div>
+    <div class="options">
+      <button class="option" onclick="select(this,'e3q9','A')"><span class="letter">A</span> Ley de Laplace</button>
+      <button class="option" onclick="select(this,'e3q9','B')"><span class="letter">B</span> Principio de los flujos tisulares del aparato circulatorio</button>
+      <button class="option" onclick="select(this,'e3q9','C')"><span class="letter">C</span> Ley de Boyle</button>
+      <button class="option" onclick="select(this,'e3q9','D')"><span class="letter">D</span> Ley de Starling renal</button>
+    </div>
+    <div class="feedback" id="fb-e3q9"></div>
+  </div>
+
+  <!-- Q10 -->
+  <div class="question" id="e3q10">
+    <div class="q-num">Pregunta 10</div>
+    <div class="q-text">La estimulación simpática para controlar la presión arterial incluye vasoconstricción venosa, cuyo efecto principal es:</div>
+    <div class="options">
+      <button class="option" onclick="select(this,'e3q10','A')"><span class="letter">A</span> Disminuir el retorno venoso al corazón</button>
+      <button class="option" onclick="select(this,'e3q10','B')"><span class="letter">B</span> Aumentar la reserva venosa y el retorno venoso</button>
+      <button class="option" onclick="select(this,'e3q10','C')"><span class="letter">C</span> Reducir la frecuencia cardíaca</button>
+      <button class="option" onclick="select(this,'e3q10','D')"><span class="letter">D</span> Bloquear los barorreceptores aórticos</button>
+    </div>
+    <div class="feedback" id="fb-e3q10"></div>
+  </div>
+
+  <!-- Q11 -->
+  <div class="question" id="e3q11">
+    <div class="q-num">Pregunta 11</div>
+    <div class="q-text">¿Qué es la vasomotilidad capilar?</div>
+    <div class="options">
+      <button class="option" onclick="select(this,'e3q11','A')"><span class="letter">A</span> El movimiento de los glóbulos rojos dentro del capilar</button>
+      <button class="option" onclick="select(this,'e3q11','B')"><span class="letter">B</span> La apertura y cierre cíclicos de los esfínteres precapilares</button>
+      <button class="option" onclick="select(this,'e3q11','C')"><span class="letter">C</span> La contracción rítmica de las venas</button>
+      <button class="option" onclick="select(this,'e3q11','D')"><span class="letter">D</span> El movimiento peristáltico del sistema linfático</button>
+    </div>
+    <div class="feedback" id="fb-e3q11"></div>
+  </div>
+
+  <!-- Q12 -->
+  <div class="question" id="e3q12">
+    <div class="q-num">Pregunta 12</div>
+    <div class="q-text">¿Qué relación existe entre el metabolismo tisular y el flujo sanguíneo local?</div>
+    <div class="options">
+      <button class="option" onclick="select(this,'e3q12','A')"><span class="letter">A</span> A mayor metabolismo, menor flujo</button>
+      <button class="option" onclick="select(this,'e3q12','B')"><span class="letter">B</span> No existe relación entre metabolismo y flujo</button>
+      <button class="option" onclick="select(this,'e3q12','C')"><span class="letter">C</span> A mayor metabolismo, mayor flujo sanguíneo</button>
+      <button class="option" onclick="select(this,'e3q12','D')"><span class="letter">D</span> Solo la presión arterial determina el flujo local</button>
+    </div>
+    <div class="feedback" id="fb-e3q12"></div>
+  </div>
+
+  <!-- Q13 -->
+  <div class="question" id="e3q13">
+    <div class="q-num">Pregunta 13</div>
+    <div class="q-text">¿Cuál es el porcentaje del flujo pulmonar del gasto cardíaco total?</div>
+    <div class="options">
+      <button class="option" onclick="select(this,'e3q13','A')"><span class="letter">A</span> 84%</button>
+      <button class="option" onclick="select(this,'e3q13','B')"><span class="letter">B</span> 7%</button>
+      <button class="option" onclick="select(this,'e3q13','C')"><span class="letter">C</span> 9%</button>
+      <button class="option" onclick="select(this,'e3q13','D')"><span class="letter">D</span> 64%</button>
+    </div>
+    <div class="feedback" id="fb-e3q13"></div>
+  </div>
+
+  <!-- Q14 -->
+  <div class="question" id="e3q14">
+    <div class="q-num">Pregunta 14</div>
+    <div class="q-text">En el equilibrio de fuerzas a nivel capilar, ¿qué tipo de fuerzas se oponen para regular el intercambio de fluidos?</div>
+    <div class="options">
+      <button class="option" onclick="select(this,'e3q14','A')"><span class="letter">A</span> Fuerzas elásticas y de gravedad</button>
+      <button class="option" onclick="select(this,'e3q14','B')"><span class="letter">B</span> Fuerzas hidrostáticas y coloidosmóticas</button>
+      <button class="option" onclick="select(this,'e3q14','C')"><span class="letter">C</span> Fuerzas de adhesión y cohesión molecular</button>
+      <button class="option" onclick="select(this,'e3q14','D')"><span class="letter">D</span> Fuerzas magnéticas y eléctricas del plasma</button>
+    </div>
+    <div class="feedback" id="fb-e3q14"></div>
+  </div>
+
+  <!-- Q15 -->
+  <div class="question" id="e3q15">
+    <div class="q-num">Pregunta 15</div>
+    <div class="q-text">¿Cómo contribuyen los músculos esqueléticos al retorno venoso?</div>
+    <div class="options">
+      <button class="option" onclick="select(this,'e3q15','A')"><span class="letter">A</span> Producen vasoconstricción arterial refleja</button>
+      <button class="option" onclick="select(this,'e3q15','B')"><span class="letter">B</span> Aumentan directamente la frecuencia cardíaca</button>
+      <button class="option" onclick="select(this,'e3q15','C')"><span class="letter">C</span> Comprimen las venas favoreciendo el retorno venoso</button>
+      <button class="option" onclick="select(this,'e3q15','D')"><span class="letter">D</span> Secretan renina para aumentar la angiotensina</button>
+    </div>
+    <div class="feedback" id="fb-e3q15"></div>
+  </div>
+
+  <!-- Q16 -->
+  <div class="question" id="e3q16">
+    <div class="q-num">Pregunta 16</div>
+    <div class="q-text">¿Cuánto tiempo puede sostenerse la vasoconstricción sistémica por estímulos adrenérgicos antes de causar presión de cierre crítico?</div>
+    <div class="options">
+      <button class="option" onclick="select(this,'e3q16','A')"><span class="letter">A</span> Indefinidamente</button>
+      <button class="option" onclick="select(this,'e3q16','B')"><span class="letter">B</span> No más de una hora</button>
+      <button class="option" onclick="select(this,'e3q16','C')"><span class="letter">C</span> Menos de 5 minutos</button>
+      <button class="option" onclick="select(this,'e3q16','D')"><span class="letter">D</span> Exactamente 24 horas</button>
+    </div>
+    <div class="feedback" id="fb-e3q16"></div>
+  </div>
+
+  <!-- Q17 -->
+  <div class="question" id="e3q17">
+    <div class="q-num">Pregunta 17</div>
+    <div class="q-text">¿Qué sistema mantiene la presión arterial regulando el balance hídrico y salino a largo plazo?</div>
+    <div class="options">
+      <button class="option" onclick="select(this,'e3q17','A')"><span class="letter">A</span> Sistema nervioso parasimpático</button>
+      <button class="option" onclick="select(this,'e3q17','B')"><span class="letter">B</span> Sistema barorreceptor carotídeo</button>
+      <button class="option" onclick="select(this,'e3q17','C')"><span class="letter">C</span> Sistema renina-angiotensina-aldosterona y metabolismo hidrosalino</button>
+      <button class="option" onclick="select(this,'e3q17','D')"><span class="letter">D</span> Sistema dopaminérgico cerebral</button>
+    </div>
+    <div class="feedback" id="fb-e3q17"></div>
+  </div>
+
+  <!-- Q18 -->
+  <div class="question" id="e3q18">
+    <div class="q-num">Pregunta 18</div>
+    <div class="q-text">¿Cuál es la diferencia de presión en el circuito pulmonar?</div>
+    <div class="options">
+      <button class="option" onclick="select(this,'e3q18','A')"><span class="letter">A</span> 100 mmHg</button>
+      <button class="option" onclick="select(this,'e3q18','B')"><span class="letter">B</span> 14 mmHg (16 − 2 mmHg)</button>
+      <button class="option" onclick="select(this,'e3q18','C')"><span class="letter">C</span> 80 mmHg</button>
+      <button class="option" onclick="select(this,'e3q18','D')"><span class="letter">D</span> 50 mmHg</button>
+    </div>
+    <div class="feedback" id="fb-e3q18"></div>
+  </div>
+
+  <!-- Q19 -->
+  <div class="question" id="e3q19">
+    <div class="q-num">Pregunta 19</div>
+    <div class="q-text">La Fase 5 de Korotkoff, en que cesan todos los ruidos, indica:</div>
+    <div class="options">
+      <button class="option" onclick="select(this,'e3q19','A')"><span class="letter">A</span> La presión sistólica</button>
+      <button class="option" onclick="select(this,'e3q19','B')"><span class="letter">B</span> La presión de pulso</button>
+      <button class="option" onclick="select(this,'e3q19','C')"><span class="letter">C</span> La presión diastólica</button>
+      <button class="option" onclick="select(this,'e3q19','D')"><span class="letter">D</span> La presión media</button>
+    </div>
+    <div class="feedback" id="fb-e3q19"></div>
+  </div>
+
+  <!-- Q20 -->
+  <div class="question" id="e3q20">
+    <div class="q-num">Pregunta 20</div>
+    <div class="q-text">La hipertensión esencial (síndrome) tiene una patogenia multifactorial y se considera que el órgano que interviene de forma primaria o secundaria es:</div>
+    <div class="options">
+      <button class="option" onclick="select(this,'e3q20','A')"><span class="letter">A</span> El hígado</button>
+      <button class="option" onclick="select(this,'e3q20','B')"><span class="letter">B</span> El pulmón</button>
+      <button class="option" onclick="select(this,'e3q20','C')"><span class="letter">C</span> El riñón</button>
+      <button class="option" onclick="select(this,'e3q20','D')"><span class="letter">D</span> El bazo</button>
+    </div>
+    <div class="feedback" id="fb-e3q20"></div>
+  </div>
+
+  <div class="exam-footer">
+    <button class="btn-submit" id="submit3" onclick="gradeExam(3)">Calificar Examen III</button>
+    <br>
+    <button class="btn-reset" id="reset3" onclick="resetExam(3)">Reiniciar</button>
+    <div class="score-box" id="score3"></div>
+  </div>
+</div>
+
+<script>
+// ── Answer keys ──────────────────────────────────────────────
+const ANSWERS = {
+  1: { e1q1:'B', e1q2:'C', e1q3:'B', e1q4:'B', e1q5:'B',
+       e1q6:'C', e1q7:'C', e1q8:'B', e1q9:'C', e1q10:'C',
+       e1q11:'C', e1q12:'B', e1q13:'B', e1q14:'B', e1q15:'C',
+       e1q16:'B', e1q17:'B', e1q18:'C', e1q19:'C', e1q20:'C' },
+
+  2: { e2q1:'B', e2q2:'C', e2q3:'C', e2q4:'B', e2q5:'B',
+       e2q6:'C', e2q7:'A', e2q8:'B', e2q9:'C', e2q10:'B',
+       e2q11:'B', e2q12:'C', e2q13:'B', e2q14:'B', e2q15:'B',
+       e2q16:'C', e2q17:'B', e2q18:'C', e2q19:'B', e2q20:'D' },
+
+  3: { e3q1:'B', e3q2:'B', e3q3:'B', e3q4:'B', e3q5:'C',
+       e3q6:'B', e3q7:'B', e3q8:'B', e3q9:'B', e3q10:'B',
+       e3q11:'B', e3q12:'C', e3q13:'C', e3q14:'B', e3q15:'C',
+       e3q16:'B', e3q17:'C', e3q18:'B', e3q19:'C', e3q20:'C' }
+};
+
+// ── Explanations ──────────────────────────────────────────────
+const EXPL = {
+  // EXAM 1
+  e1q1: 'La Fase 0 corresponde a la despolarización rápida por apertura de canales rápidos de Na+, generando el ascenso veloz del potencial.',
+  e1q2: 'En la Fase 2 (meseta), los canales lentos de Na+ y Ca++ se abren y mantienen el potencial elevado durante un tiempo prolongado, característico del músculo cardíaco.',
+  e1q3: 'El túbulo T, con 5 veces el diámetro del retículo endoplásmico liso, aporta 25 veces más calcio; el REL aporta cantidades insuficientes.',
+  e1q4: 'El período refractario es el tiempo en que el potencial se mantiene sobre el umbral y no permite una nueva descarga completa.',
+  e1q5: 'El impulso tarda 0.03 seg en entrar al nodo AV y 0.09 seg en atravesarlo (retardo fisiológico necesario para la contracción secuencial).',
+  e1q6: 'Las fibras de Purkinje conducen a 1.5–4 m/s, 6 veces más rápido que la fibra muscular ventricular (0.3–0.5 m/s).',
+  e1q7: 'El nodo sinusal tiene un potencial de reposo entre −55 mV y −40 mV, muy cercano al umbral, lo que le confiere automatismo.',
+  e1q8: 'Según Frank-Starling, a mayor elongación (estiramiento) de la fibra miocárdica, mayor es la fuerza de contracción generada.',
+  e1q9: 'La tropomiosina cubre los sitios activos de la actina. La troponina es la que se une al calcio y desplaza a la tropomiosina para permitir el ciclo de puentes cruzados.',
+  e1q10: 'Los receptores β1-adrenérgicos del nodo sinusal aumentan la frecuencia cardíaca (cronotropismo positivo) y la contractilidad (inotropismo positivo).',
+  e1q11: 'En la Fase 3 se abren los canales de K+ y se cierran los canales lentos de Ca++ y Na+, lo que produce la repolarización.',
+  e1q12: 'Las bandas interauriculares conducen hasta 1 m/s, mucho más rápido que la velocidad auricular normal de 0.3 m/s.',
+  e1q13: 'Los anillos fibrosos de tejido conectivo denso (TCD) no conducen electricidad, forzando al impulso a pasar solo por el nodo AV y el haz de His.',
+  e1q14: 'El potencial de acción ventricular dura 0.25 a 0.35 segundos, correspondiente a la meseta prolongada de la célula miocárdica.',
+  e1q15: 'La onda P representa la despolarización auricular (contracción de las aurículas).',
+  e1q16: 'En el papel de ECG estándar, cada cuadradito mide 0.1 mV en altura y 0.04 seg (25 mm/s → 1 mm = 0.04 s).',
+  e1q17: 'Según el Triángulo de Einthoven: DI = 0°, DII = 60° (opuesto AVL), DIII = 120° (opuesto AVR).',
+  e1q18: 'La contracción isovolumétrica ocurre al cerrar las válvulas AV (1er ruido), aumentando la presión ventricular sin cambiar el volumen.',
+  e1q19: 'El 80% del llenado ventricular es pasivo (de aurícula a ventrículo); el 20% restante lo aporta la contracción auricular.',
+  e1q20: 'El 2do ruido cardíaco ocurre por el cierre de las válvulas sigmoideas (pulmonar y aórtica) al inicio de la diástole.',
+
+  // EXAM 2
+  e2q1: 'Velocidad (V) = Flujo (F) / Área transversal (A). A mayor área, menor velocidad; relación inversamente proporcional.',
+  e2q2: 'Del 84% sistémico, el 64% está en venas, el 13% en arterias y el 7% en capilares/arteriolas.',
+  e2q3: 'Ley de Poiseuille: F ∝ r⁴. Una pequeña variación del radio produce un enorme cambio en el flujo.',
+  e2q4: 'Reynolds > 2,000 produce turbulencias incluso en vasos rectos pequeños. Entre 200–400 solo en bifurcaciones.',
+  e2q5: 'PAM = PD + (PS − PD)/3. Es equivalente a 1/3 de la presión de pulso más la diastólica.',
+  e2q6: 'Fase 1 de Korotkoff: primer ruido al desinflar → Presión Sistólica. Fase 5: cese de ruidos → Presión Diastólica.',
+  e2q7: 'PA sistólica normal en adulto: >90 y <130 mmHg; ideal <120 mmHg. PA diastólica: >60 y <90 mmHg.',
+  e2q8: 'Compliance = Volumen × Distensibilidad. Indica la capacidad del vaso para almacenar volumen por cambio de presión.',
+  e2q9: 'En arterioesclerosis, la pared arterial es rígida, la compliance disminuye y la presión de pulso aumenta marcadamente.',
+  e2q10: 'La resistencia periférica total = sumatoria de resistencias de vasos de calibre similar en paralelo al corte transversal.',
+  e2q11: 'La aurícula derecha presenta presiones entre 0 y −5 mmHg (presiones negativas), medibles con una vía venosa central (CVC).',
+  e2q12: 'El mercurio es 13.6 veces más denso que el agua, lo que permite que pequeñas presiones eleven columnas visibles.',
+  e2q13: 'El aumento de hematocrito y de proteínas plasmáticas eleva la viscosidad sanguínea (normalmente 3 a 4 poise).',
+  e2q14: 'GC normal en adulto ≈ 3 l/min/m², equivalente a ~5 L/min en una persona de 60 kg en reposo.',
+  e2q15: 'Al extirpar un órgano, se pierde un lecho vascular en paralelo, lo que aumenta la resistencia total.',
+  e2q16: 'Precarga = volumen que llega al corazón (retorno venoso). Postcarga = volumen/resistencia que debe vencer al eyectar.',
+  e2q17: 'El brazo debe estar a la altura del corazón (sentado sobre la mesa) para evitar errores por diferencia hidrostática.',
+  e2q18: 'Las venas son más distensibles que las arterias; almacenan grandes volúmenes con mínimos cambios de presión.',
+  e2q19: 'Se insufla hasta 20 mmHg por encima del último latido escuchado para asegurar que la arteria esté completamente ocluida.',
+  e2q20: 'El sistema complemento es parte de la inmunidad innata y no regula la presión arterial. Los 4 sistemas son: barorreceptores, metabolismo hidrosalino, SRAA y autorregulación vascular.',
+
+  // EXAM 3
+  e3q1: 'El simpático produce vasoconstricción (receptores α) e inotropismo/cronotropismo positivos (receptores β1).',
+  e3q2: 'El sistema dopaminérgico dilata las coronarias. No confundir con el simpático general que puede vasoconstreñir otros lechos.',
+  e3q3: 'La hiperemia reactiva es la vasodilatación refleja y aumento de flujo que ocurre tras la liberación de una oclusión vascular.',
+  e3q4: 'Ante hipoxia tisular, el esfínter precapilar se relaja, abriendo más capilares para aumentar la perfusión del tejido.',
+  e3q5: 'La adenosina es un metabolito vasodilatador local importante; se libera con el metabolismo celular e hipoxia.',
+  e3q6: 'GC = Volumen de eyección × FC. El VE es el volumen neto que sale del corazón en cada sístole.',
+  e3q7: 'Riñones, suprarrenales, tiroides e hígado tienen el mayor flujo por gramo de tejido/minuto, por sus altas demandas metabólicas.',
+  e3q8: 'Con ventiladores mecánicos y alto FiO₂, el exceso de O₂ puede producir vasoconstricción refleja (vasoconstricción hipóxica inversa).',
+  e3q9: 'Es uno de los principios básicos del aparato circulatorio: el GC es la suma de todos los flujos locales de cada tejido.',
+  e3q10: 'La vasoconstricción venosa simpática reduce el reservorio venoso y aumenta el retorno venoso (precarga) al corazón.',
+  e3q11: 'La vasomotilidad es la apertura y cierre cíclicos de los esfínteres precapilares, modulando la perfusión capilar según la demanda local.',
+  e3q12: 'A mayor metabolismo tisular (mayor demanda de O₂ y producción de CO₂/metabolitos vasodilatadores), mayor flujo local.',
+  e3q13: 'La circulación pulmonar recibe el 9% del gasto cardíaco total en reposo; la coronaria el 7% y la sistémica el 84%.',
+  e3q14: 'A nivel capilar se equilibran: presión hidrostática (favorece salida) vs. presión coloidosmótica (favorece entrada).',
+  e3q15: 'Los músculos comprimen las venas al contraerse, impulsando la sangre hacia el corazón (bomba muscular periférica).',
+  e3q16: 'La vasoconstricción sistémica por adrenalina no puede sostenerse más de una hora sin riesgo de presión de cierre crítico tisular.',
+  e3q17: 'El sistema renina-angiotensina-aldosterona y el metabolismo hidrosalino son los principales reguladores a largo plazo de la PA.',
+  e3q18: 'Circuito pulmonar: diferencia de presión = 16 − 2 = 14 mmHg, mucho menor que el sistémico (≈100 mmHg).',
+  e3q19: 'Fase 5 de Korotkoff = cese de ruidos = Presión Diastólica (PAD). Fase 1 = primer ruido = Presión Sistólica (PAS).',
+  e3q20: 'La HTA esencial es multifactorial pero el riñón (control de volumen, renina) es el órgano central involucrado primaria o secundariamente.'
+};
+
+// ── State ──────────────────────────────────────────────────────
+const selected = {};   // { qid: chosen_letter }
+
+// ── UI helpers ─────────────────────────────────────────────────
+function showExam(n) {
+  document.querySelectorAll('.exam-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('exam' + n).classList.add('active');
+  document.querySelectorAll('.tab-btn')[n-1].classList.add('active');
+}
+
+function select(btn, qid, letter) {
+  const panel = btn.closest('.exam-panel');
+  const graded = panel.querySelector('.score-box').style.display === 'block';
+  if (graded) return;
+
+  // deselect siblings
+  btn.closest('.options').querySelectorAll('.option').forEach(o => o.classList.remove('selected'));
+  btn.classList.add('selected');
+  selected[qid] = letter;
+}
+
+// ── Grading ────────────────────────────────────────────────────
+function gradeExam(n) {
+  const key = ANSWERS[n];
+  let correct = 0;
+
+  Object.entries(key).forEach(([qid, ans]) => {
+    const qEl = document.getElementById(qid);
+    const chosen = selected[qid];
+    const opts = qEl.querySelectorAll('.option');
+    const fb = document.getElementById('fb-' + qid);
+
+    opts.forEach(o => { o.disabled = true; o.classList.remove('selected'); });
+
+    // Mark options
+    opts.forEach(o => {
+      const ltr = o.querySelector('.letter').textContent.trim();
+      if (ltr === ans) o.classList.add('correct');
+      else if (chosen && ltr === chosen && chosen !== ans) o.classList.add('wrong');
+    });
+
+    // Feedback
+    fb.classList.add('show');
+    if (chosen === ans) {
+      correct++;
+      fb.className = 'feedback show ok';
+      fb.innerHTML = '✓ Correcto. ' + EXPL[qid];
+    } else if (!chosen) {
+      fb.className = 'feedback show fail';
+      fb.innerHTML = '— No respondida. La respuesta correcta es <strong>' + ans + '</strong>. ' + EXPL[qid];
+    } else {
+      fb.className = 'feedback show fail';
+      fb.innerHTML = '✗ Incorrecto. La respuesta correcta es <strong>' + ans + '</strong>. ' + EXPL[qid];
+    }
+  });
+
+  // Show score
+  const pct = Math.round((correct / 20) * 100);
+  const msg = pct === 100 ? '¡Perfecto! Dominio total del tema.' :
+              pct >= 80  ? 'Excelente rendimiento.' :
+              pct >= 60  ? 'Buen manejo, repasa los temas fallados.' :
+              pct >= 40  ? 'Regular. Refuerza los conceptos clave.' :
+                           'Necesitas repasar el material con detalle.';
+
+  const scoreEl = document.getElementById('score' + n);
+  scoreEl.style.display = 'block';
+  scoreEl.innerHTML = `<div class="score-num">${correct}/20</div>
+    <div class="score-label">${pct}% de respuestas correctas</div>
+    <div class="score-msg">${msg}</div>`;
+
+  document.getElementById('submit' + n).disabled = true;
+  document.getElementById('reset' + n).style.display = 'inline-block';
+
+  scoreEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+// ── Reset ─────────────────────────────────────────────────────
+function resetExam(n) {
+  const panel = document.getElementById('exam' + n);
+  const key = ANSWERS[n];
+
+  Object.keys(key).forEach(qid => {
+    delete selected[qid];
+    const qEl = document.getElementById(qid);
+    qEl.querySelectorAll('.option').forEach(o => {
+      o.disabled = false;
+      o.className = 'option';
+    });
+    const fb = document.getElementById('fb-' + qid);
+    fb.className = 'feedback';
+    fb.innerHTML = '';
+  });
+
+  document.getElementById('score' + n).style.display = 'none';
+  document.getElementById('submit' + n).disabled = false;
+  document.getElementById('reset' + n).style.display = 'none';
+  panel.scrollIntoView({ behavior: 'smooth' });
+}
+</script>
+</body>
+</html>
